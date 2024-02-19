@@ -9,55 +9,59 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class App {
+    private static JFrame frame; // Referência estática para a janela do menu principal
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
 
     public static void createAndShowGUI() {
-        JFrame frame = new JFrame("Menu Campo Minado");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        if (frame == null) {
+            frame = new JFrame("Menu Campo Minado");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(400, 300);
+            frame.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
 
-        JLabel titleLabel = new JLabel("Bem-vindo ao Campo Minado");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        frame.add(titleLabel, gbc);
+            JLabel titleLabel = new JLabel("Bem-vindo ao Campo Minado");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            frame.add(titleLabel, gbc);
 
-        JButton playButton = createButton("Difícil");
-        JButton playButton2 = createButton("Médio");
-        JButton playButton3 = createButton("Fácil");
-        JButton playCrazyButton = createButton("Maluco");
+            JButton playButton = createButton("Difícil");
+            JButton playButton2 = createButton("Médio");
+            JButton playButton3 = createButton("Fácil");
+            JButton playCrazyButton = createButton("Maluco");
 
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        frame.add(playButton, gbc);
+            gbc.gridy = 1;
+            gbc.gridwidth = 1;
+            frame.add(playButton, gbc);
 
-        gbc.gridx = 1;
-        frame.add(playButton2, gbc);
+            gbc.gridx = 1;
+            frame.add(playButton2, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        frame.add(playButton3, gbc);
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            frame.add(playButton3, gbc);
 
-        gbc.gridx = 1;
-        frame.add(playCrazyButton, gbc);
+            gbc.gridx = 1;
+            frame.add(playCrazyButton, gbc);
 
-        JButton exitButton = createButton("Sair");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        frame.add(exitButton, gbc);
+            JButton exitButton = createButton("Sair");
+            gbc.gridx = 0;
+            gbc.gridy = 3;
+            gbc.gridwidth = 2;
+            frame.add(exitButton, gbc);
 
-        playButton.addActionListener(e -> startGame("Difícil"));
-        playButton2.addActionListener(e -> startGame("Médio"));
-        playButton3.addActionListener(e -> startGame("Fácil"));
-        playCrazyButton.addActionListener(e -> startGame("Maluco"));
-        exitButton.addActionListener(e -> System.exit(0));
+            playButton.addActionListener(e -> startGame("Difícil"));
+            playButton2.addActionListener(e -> startGame("Médio"));
+            playButton3.addActionListener(e -> startGame("Fácil"));
+            playCrazyButton.addActionListener(e -> startGame("Maluco"));
+            exitButton.addActionListener(e -> System.exit(0));
+        }
 
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);

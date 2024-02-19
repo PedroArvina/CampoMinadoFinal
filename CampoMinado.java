@@ -4,8 +4,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.Random;
+import campominado.gui.App;
 
-public class CampoMinado {
+
+public class CampoMinado{
+	
+	private JButton botaoVoltar = new JButton("Voltar"); 
+
 	
 	public class InvalidAttributeValueException extends Exception {
 	    public InvalidAttributeValueException(String message) {
@@ -124,11 +129,11 @@ public class CampoMinado {
     	
     	try {
             setNumeroDeLinhasTotal(32);  
-            setNumeroDeColunasTotal(32);
+            setNumeroDeColunasTotal(32);  
             setQuantidadeDeBombasNaPartida(100);  
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return;  
+            return;
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
@@ -183,6 +188,14 @@ public class CampoMinado {
                 PainelDosQuadradinhos.add(celula);
             }
         }
+        
+
+    
+        botaoVoltar.setFont(new Font("Arial", Font.BOLD, 20));
+        botaoVoltar.addActionListener(e -> voltarAoMenu());
+        PainelDoTexto.add(botaoVoltar, BorderLayout.SOUTH);
+
+
 
         JanelaInicial.setVisible(true);
         distribuidorDeBombas();
@@ -290,6 +303,11 @@ public class CampoMinado {
                 celula.setText("");
             }
         }
+    }
+    
+    private void voltarAoMenu() {
+        JanelaInicial.dispose();
+        App.createAndShowGUI();  
     }
 
     void trocarJogador() {

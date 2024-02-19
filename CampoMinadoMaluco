@@ -1,0 +1,182 @@
+package campominado12;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+
+public class CampoMinadoMaluco {
+    private int NumeroDeLinhasTotal;
+    private int NumeroDeColunasTotal;
+    private int QuantidadeDeBombasNaPartida;
+    private Celula[][] MatrizDoTabuleiro;
+    private Random random = new Random();
+    private JFrame JanelaInicial = new JFrame("Campo Minado Maluco");
+
+    public class Celula extends JButton {
+        public int linha;
+        public int coluna;
+        public boolean aberta;
+        public boolean temMina;
+        public boolean marcada;
+        public boolean maluca;
+
+        public Celula(int linha, int coluna) {
+            this.linha = linha;
+            this.coluna = coluna;
+            this.aberta = false;
+            this.temMina = false;
+            this.marcada = false;
+            this.maluca = random.nextDouble() < 0.3;  
+            this.setFont(new Font("Arial", Font.PLAIN, 25));
+            this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            this.setBackground(Color.LIGHT_GRAY);
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        revelar();
+                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                        marcarBandeira();
+                    }
+                }
+            });
+        }
+
+        public void revelar() {
+            if (!aberta && !marcada) {
+                aberta = true;
+                setBackground(Color.WHITE);
+                if (temMina) {
+                    setText("X");
+                    mostrarBombas();
+                } else {
+                    int minasVizinhas = contarMinasVizinhas();
+                    setText(minasVizinhas > 0 ? Integer.toString(minasVizinhas) : "");
+                    if (minasVizinhas == 0) {
+                        abrirVizinhas();
+                    }
+                }
+                revalidate();
+                repaint();
+            }
+        }
+
+        public void marcarBandeira() {
+            if (!aberta) {
+                marcada = !marcada;
+                setText(marcada ? "F" : "");
+                if (maluca) {
+                    boolean estadoAnterior = temMina;
+                    temMina = random.nextBoolean();
+                    if (estadoAnterior != temMina) {
+                        atualizarVizinhas();
+                    }
+                }
+                revalidate();
+                repaint();
+            }
+        }
+
+        private int contarMinasVizinhas() {
+            int contador = 0;
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    int linhaVizinha = linha + i;
+                    int colunaVizinha = coluna + j;
+                    if (linhaVizinha >= 0 && linhaVizinha < NumeroDeLinhasTotal && colunaVizinha >= 0 && colunaVizinha < NumeroDeColunasTotal) {
+                        if (MatrizDoTabuleiro[linhaVizinha][colunaVizinha].temMina) {
+                            contador++;
+                        }
+                    }
+                }
+            }
+            return contador;
+        }
+
+        private void abrirVizinhas() {
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) continue;  
+                    int linhaVizinha = linha + i;
+                    int colunaVizinha = coluna + j;
+                    if (linhaVizinha >= 0 && linhaVizinha < NumeroDeLinhasTotal && colunaVizinha >= 0 && colunaVizinha < NumeroDeColunasTotal) {
+                        Celula vizinha = MatrizDoTabuleiro[linhaVizinha][colunaVizinha];
+                        if (!vizinha.aberta && !vizinha.marcada) {
+                            vizinha.revelar();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void atualizarVizinhas() {
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    int linhaVizinha = linha + i;
+                    int colunaVizinha = coluna + j;
+                    if (linhaVizinha >= 0 && linhaVizinha < NumeroDeLinhasTotal && colunaVizinha >= 0 && colunaVizinha < NumeroDeColunasTotal) {
+                        Celula vizinha = MatrizDoTabuleiro[linhaVizinha][colunaVizinha];
+                        if (vizinha.aberta) {
+                            vizinha.atualizarTexto();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void atualizarTexto() {
+            if (aberta) {
+                int minasVizinhas = contarMinasVizinhas();
+                setText(minasVizinhas > 0 ? Integer.toString(minasVizinhas) : "");
+            }
+        }
+    }
+
+    public CampoMinadoMaluco(int linhas, int colunas, int bombas) {
+        NumeroDeLinhasTotal = linhas;
+        NumeroDeColunasTotal = colunas;
+        QuantidadeDeBombasNaPartida = bombas;
+        MatrizDoTabuleiro = new Celula[linhas][colunas];
+        JanelaInicial.setLayout(new GridLayout(linhas, colunas));
+        for (int i = 0; i < linhas; i++) {
+            for (int j = 0; j < colunas; j++) {
+                Celula celula = new Celula(i, j);
+                MatrizDoTabuleiro[i][j] = celula;
+                JanelaInicial.add(celula);
+            }
+        }
+        distribuirBombas();
+        JanelaInicial.setSize(colunas * 40, linhas * 40);
+        JanelaInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JanelaInicial.setVisible(true);
+    }
+
+    private void distribuirBombas() {
+        int bombasRestantes = QuantidadeDeBombasNaPartida;
+        while (bombasRestantes > 0) {
+            int linha = random.nextInt(NumeroDeLinhasTotal);
+            int coluna = random.nextInt(NumeroDeColunasTotal);
+            Celula celula = MatrizDoTabuleiro[linha][coluna];
+            if (!celula.temMina) {
+                celula.temMina = true;
+                bombasRestantes--;
+            }
+        }
+    }
+
+    private void mostrarBombas() {
+        for (int i = 0; i < NumeroDeLinhasTotal; i++) {
+            for (int j = 0; j < NumeroDeColunasTotal; j++) {
+                Celula celula = MatrizDoTabuleiro[i][j];
+                if (celula.temMina) {
+                    celula.setBackground(Color.RED);
+                    celula.setText("X");
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        new CampoMinadoMaluco(20, 20, 40);  
+    }
+}

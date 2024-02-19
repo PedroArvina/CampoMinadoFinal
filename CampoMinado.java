@@ -128,12 +128,12 @@ public class CampoMinado{
     public CampoMinado() {
     	
     	try {
-            setNumeroDeLinhasTotal(32);  
-            setNumeroDeColunasTotal(32);  
-            setQuantidadeDeBombasNaPartida(100);  
+            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
+            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
+            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return;
+            return; // Interrompe a execução do construtor
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
@@ -192,8 +192,14 @@ public class CampoMinado{
 
     
         botaoVoltar.setFont(new Font("Arial", Font.BOLD, 20));
+        botaoVoltar.setBackground(new Color(150, 150, 150)); 
+        botaoVoltar.setForeground(Color.WHITE); 
+        botaoVoltar.setBorder(BorderFactory.createRaisedBevelBorder()); 
+        botaoVoltar.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
+        botaoVoltar.setMargin(new Insets(10, 20, 10, 20)); 
         botaoVoltar.addActionListener(e -> voltarAoMenu());
         PainelDoTexto.add(botaoVoltar, BorderLayout.SOUTH);
+
 
 
 
@@ -307,7 +313,7 @@ public class CampoMinado{
     
     private void voltarAoMenu() {
         JanelaInicial.dispose();
-        App.createAndShowGUI();  
+        App.createAndShowGUI();  // Certifique-se de que este método é público e estático na classe App
     }
 
     void trocarJogador() {

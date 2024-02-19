@@ -312,9 +312,10 @@ public class CampoMinado{
     }
     
     private void voltarAoMenu() {
-        JanelaInicial.dispose();
-        App.createAndShowGUI();  // Certifique-se de que este método é público e estático na classe App
+        JanelaInicial.dispose(); // Fecha a janela atual
+        App.createAndShowGUI(); // Mostra a janela do menu principal
     }
+
 
     void trocarJogador() {
         jogadorAtual = (jogadorAtual % totalJogadores) + 1;

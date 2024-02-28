@@ -5,11 +5,24 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.Random;
 import campominado.gui.App;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 public class CampoMinado{
 	
-	private JButton botaoVoltar = new JButton("Voltar"); 
+	private JButton botaoVoltar = new JButton("Voltar");
+	
+	private void salvarPontuacao() {
+	    String arquivoDePontuacoes = "pontuacoes.txt";
+	    try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDePontuacoes, true))) {
+	        bw.write(nomeDoUsuario + "," + pontuacao);
+	        bw.newLine();
+	    } catch (IOException e) {
+	        System.out.println("Erro ao salvar a pontuação: " + e.getMessage());
+	    }
+	}
 
 	
 	public class InvalidAttributeValueException extends Exception {
@@ -100,11 +113,16 @@ public class CampoMinado{
         @Override
         public void revelar() {
             mostrarBombas();
+            salvarPontuacao();
         }
     }
 
     private int jogadorAtual = 1;
     private int totalJogadores = 2;
+    private String nomeDoUsuario;
+    private int pontuacao = 0;
+    private String nomeDaEquipe;
+
 
     private int TamanhoDosQuadradinhos = 40;
     private int NumeroDeLinhasTotal = 32;
@@ -127,13 +145,18 @@ public class CampoMinado{
 
     public CampoMinado() {
     	
+    	nomeDoUsuario = JOptionPane.showInputDialog(JanelaInicial, "Digite o nome da Equipe:", "Bem-vindo ao Campo Minado", JOptionPane.PLAIN_MESSAGE);
+    	if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
+    	    nomeDoUsuario = "Jogador"; 
+    	}
+    	
     	try {
-            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
+            setNumeroDeLinhasTotal(32); 
+            setNumeroDeColunasTotal(32);
+            setQuantidadeDeBombasNaPartida(100); 
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
+            return;
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
@@ -237,16 +260,28 @@ public class CampoMinado{
         }
 
         FimDeJogo = true;
-        atualizarStatusDoJogo();
+        atualizarPontuacao();
     }
+    
+    private void atualizarPontuacao() {
+        if (FimDeJogo) {
+            statusLabel.setText("Fim de Jogo! Pontuação: " + pontuacao);
+        } else {
+            statusLabel.setText("Jogador " + jogadorAtual + " - Pontuação: " + pontuacao);
+        }
+    }
+
 
     void abrirCelula(Celula celula) {
         if (celula.aberta) {
             return;
         }
-
-        if (celula.temMina) {
+        if (!celula.temMina) {
+            pontuacao += 1;
+            atualizarPontuacao();
+        } else {
             mostrarBombas();
+            statusLabel.setText("Game Over! Pontuação: " + pontuacao);
             return;
         }
 
@@ -265,7 +300,8 @@ public class CampoMinado{
 
         if (NumeroDeQuadradosClicados == NumeroDeLinhasTotal * NumeroDeColunasTotal - QuantidadeDeBombasNaPartida) {
             FimDeJogo = true;
-            statusLabel.setText("Campo Limpo!");
+            salvarPontuacao();
+            statusLabel.setText("Parabéns! Você limpou o campo. Pontuação: " + pontuacao);
         }
     }
 
@@ -300,6 +336,8 @@ public class CampoMinado{
             }
         }
     }
+    
+    
 
     void marcarBandeira(Celula celula) {
         if (!celula.aberta) {
@@ -312,8 +350,8 @@ public class CampoMinado{
     }
     
     private void voltarAoMenu() {
-        JanelaInicial.dispose(); // Fecha a janela atual
-        App.createAndShowGUI(); // Mostra a janela do menu principal
+        JanelaInicial.dispose(); 
+        App.createAndShowGUI(); 
     }
 
 
@@ -324,7 +362,7 @@ public class CampoMinado{
 
     void atualizarStatusDoJogo() {
         if (FimDeJogo) {
-            statusLabel.setText("Fim de Jogo!");
+        	statusLabel.setText("Parabéns, Equipe " + nomeDoUsuario + "!. Pontuação: " + pontuacao);
         } else {
             statusLabel.setText("Jogador " + jogadorAtual);
         }

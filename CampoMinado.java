@@ -124,7 +124,7 @@ public class CampoMinado{
     private String nomeDaEquipe;
 
 
-    private int TamanhoDosQuadradinhos = 40;
+    private int TamanhoDosQuadradinhos = 30;
     private int NumeroDeLinhasTotal = 32;
     private int NumeroDeColunasTotal = NumeroDeLinhasTotal;
     private int LarguraTabuleiro = NumeroDeColunasTotal * TamanhoDosQuadradinhos;

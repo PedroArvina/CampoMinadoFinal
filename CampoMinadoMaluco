@@ -388,27 +388,81 @@ private double nivelDeMaluquice = 0.9;
     
 
     void marcarBandeira(Celula celula) {
-        if (!celula.aberta) {
-            if (celula.getText().isEmpty()) {
-                celula.setText("I");
-                if (celula.maluca) {
-                    boolean estadoAnteriorDaMina = celula.temMina;
-                    if (random.nextDouble() < nivelDeMaluquice) {
-                        celula.temMina = !celula.temMina;
-                    }
-                    if (estadoAnteriorDaMina != celula.temMina) {
-                        atualizarVizinhanca(celula);
-                    }
-                }
-            } else {
-                celula.setText("");
-                if (celula.maluca) {
+        if (celula.aberta) {
+            return; 
+        }
+
+        
+        if (celula.getText().equals("F")) {
+            celula.setText("");
+        } else {
+            
+            celula.setText("F");
+
+            
+            if (celula.maluca && random.nextDouble() < nivelDeMaluquice) {
+                if (celula.temMina) {
                     
-                    atualizarVizinhanca(celula);
+                    transformarEmCelulaVazia(celula);
                 }
             }
         }
     }
+
+    void transformarEmCelulaVazia(Celula celula) {
+        celula.temMina = false;
+        celula.maluca = false; 
+        celula.setText(""); 
+        celula.setBackground(Color.WHITE); 
+
+        
+        atualizarCelulasAdjacentes(celula);
+    }
+
+    void atualizarCelulasAdjacentes(Celula celula) {
+        
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int linhaAdjacente = celula.linha + i;
+                int colunaAdjacente = celula.coluna + j;
+                
+                if (linhaAdjacente >= 0 && linhaAdjacente < NumeroDeLinhasTotal &&
+                    colunaAdjacente >= 0 && colunaAdjacente < NumeroDeColunasTotal) {
+                    Celula celulaAdjacente = MatrizDoTabuleiro[linhaAdjacente][colunaAdjacente];
+                    if (!celulaAdjacente.temMina && celulaAdjacente.aberta) {
+                        
+                        int minasAoRedor = contadorDeMinas(linhaAdjacente, colunaAdjacente);
+                        celulaAdjacente.setText(minasAoRedor > 0 ? Integer.toString(minasAoRedor) : "");
+                    }
+                }
+            }
+        }
+        PainelDosQuadradinhos.revalidate();
+        PainelDosQuadradinhos.repaint();
+    }
+
+
+
+    void aplicarEstiloVisual(Celula celula) {
+        celula.setFocusable(false);
+        celula.setMargin(new Insets(0, 0, 0, 0));
+        celula.setFont(new Font("Arial", Font.PLAIN, 25));
+        celula.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        celula.setBackground(Color.LIGHT_GRAY);
+
+        
+    }
+
+
+    void aplicarEstiloVisual(Celula celula) {
+        celula.setFocusable(false);
+        celula.setMargin(new Insets(0, 0, 0, 0));
+        celula.setFont(new Font("Arial", Font.PLAIN, 25));
+        celula.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        celula.setBackground(Color.LIGHT_GRAY);
+    }
+
+
 
 
 
